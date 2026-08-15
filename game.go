@@ -7,14 +7,16 @@ import (
 	"strings"
 )
 
-func play(quizItems []QuizItem) error {
+func play(quizItems []QuizItem, done chan<- string, errChan chan error) {
 	reader := bufio.NewScanner(os.Stdin)
 	correctCount := 0
 	for _, item := range quizItems {
 		fmt.Printf("%s:", item.Question)
+
 		if !reader.Scan() {
 			break
 		}
+
 		userAnswer := cleanInput(reader.Text())
 		if userAnswer == item.Answer {
 			correctCount++
@@ -23,11 +25,12 @@ func play(quizItems []QuizItem) error {
 	}
 
 	if err := reader.Err(); err != nil {
-		return err
+		errChan <- err
+		return
 	}
 
 	fmt.Printf("Score %d/%d\n", correctCount, len(quizItems))
-	return nil
+	close(done)
 }
 
 func cleanInput(input string) string {
