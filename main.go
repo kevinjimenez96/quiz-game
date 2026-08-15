@@ -32,11 +32,19 @@ func main() {
 
 	go play(quizItems, gameDone, gameErrors)
 
-	select {
-	case <-time.After(10 * time.Second):
-		fmt.Println("Time exceded!")
-	case <-gameDone:
-	case err = <-gameErrors:
-		log.Fatal(err)
+	results := "No score!"
+
+outerLoop:
+	for {
+		select {
+		case <-time.After(10 * time.Second):
+			fmt.Println("\nTime exceded!")
+			fmt.Println(results)
+			break outerLoop
+		case results = <-gameDone:
+
+		case err = <-gameErrors:
+			log.Fatal(err)
+		}
 	}
 }

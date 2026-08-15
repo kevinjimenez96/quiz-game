@@ -20,8 +20,8 @@ func play(quizItems []QuizItem, done chan<- string, errChan chan error) {
 		userAnswer := cleanInput(reader.Text())
 		if userAnswer == item.Answer {
 			correctCount++
+			done <- fmt.Sprintf("Score %d/%d\n", correctCount, len(quizItems))
 		}
-		fmt.Println()
 	}
 
 	if err := reader.Err(); err != nil {
